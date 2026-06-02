@@ -1,0 +1,12 @@
+---
+title: "ENVS-193DS Final"
+date: "2026-06-02"
+author: "Luke Simon"
+format: 
+  pdf:
+    toc: true
+execute:
+  message: false
+  warning: false
+---
+
