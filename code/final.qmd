@@ -13,6 +13,7 @@ execute:
 [Link to repo](https://github.com/lukesimonn/ENVS-193DS_spring-2026_final)
 
 ```{r}
+#| label: packages-data
 
 # read in packages
 library(tidyverse)
@@ -22,5 +23,38 @@ library(DHARMa)
 # reading in data and creating new object
 nest <- read_csv(
   here("data", "nest_data_final.csv"))
+```
+
+
+# Problem 1. Research writing
+
+# Problem 2. Data Analysis
+
+## a.
+
+```{r}
+#| label: cleaning-wrangling
+
+# creating clean data frame
+nests_clean <- nest |> 
+  # selecting desired columns
+  select(ant_species, height_cm, case_control) |> 
+  # filtering for desired ant species
+  filter(ant_species %in% c("RRB", "BBR", "AB")) |> 
+  # creating new column for full scientific name
+  mutate(sci_name = case_when(
+      ant_species == "RRB" ~ "Crematogaster sjostedti",
+      ant_species == "BBR" ~ "Crematogaster mimosae",
+      ant_species == "AB"  ~ "Crematogaster nigriceps"),
+      # reordering factors for ant species
+    ant_species = factor(ant_species,
+      levels = c("RRB", "BBR", "AB"))
+    )
+
+# displaying structure of data frame
+str(nests_clean)
+
+# slicing sample
+slice_sample(nests_clean, n = 10)
 ```
 
