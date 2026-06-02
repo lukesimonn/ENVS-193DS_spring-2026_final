@@ -58,3 +58,23 @@ str(nests_clean)
 slice_sample(nests_clean, n = 10)
 ```
 
+## b.
+
+For this data, a value of 1 in the case_control column indicates that a nest was observed in the acacia tree in question. A value of zero in that said column means that no bird nest was observed in the tree.
+
+## c.
+
+### Tree Height (height_cm)
+
+Tree height in this data set is a continuous variable that is measured in centimeters. As tree height increases the probability of nest occurrence would likely increase. Taller trees are more structurally complex and therefore have more nesting opportunities, they may also provide better predator avoidance for birds (Introduction, paragraph 2; Methods, "Study site and species" subsection, paragraph 1).
+
+### Acacia ant species (ant_species)
+
+As ant species changes, the probability of nest occurance would likely differ. This is due to each ant species exhibiting a distinct aggression level and mutualistic relationship with the host Acacia tree which affects the level of predator protection a nest in said tree would receive. (Introduction, paragraph 3; Methods, "Nest box experiment" subsection, paragraph 1)
+
+## d.
+
+| Model number | Ant Species | Tree Height | Predictor list                               |  
+|--------------|:-----------:|:-----------:|:--------------------------------------------:|  
+| 0            |     X       |      X      | all predictors, no interaction (null model)  |
+| 1            |     X       |      X      | all predictors, with interaction (full model)|                  
