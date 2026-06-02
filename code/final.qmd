@@ -10,3 +10,17 @@ execute:
   warning: false
 ---
 
+[Link to repo](https://github.com/lukesimonn/ENVS-193DS_spring-2026_final)
+
+```{r}
+
+# read in packages
+library(tidyverse)
+library(here)
+library(DHARMa)
+
+# reading in data and creating new object
+nest <- read_csv(
+  here("data", "nest_data_final.csv"))
+```
+
