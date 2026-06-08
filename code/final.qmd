@@ -21,6 +21,7 @@ library(here)
 library(DHARMa)
 library(ggeffects)
 library(rstatix)
+library(janitor)
 
 # reading in data and creating new object
 nest <- read_csv(
@@ -219,17 +220,17 @@ predict_600 <- ggpredict(model2,
 - My affective visualization is pretty much a completely new way to display data when compared to my initial exploratory plots. In effect, it is still a sort of scatter plot but point shape and color matter far more than location. There is also no models or metrics of central tendency as my goal with the affective visualization was not to make something that explained the whole dataset.
 - Honestly it is pretty much impossible to see any similarities between my plots and my affective piece, they share no discernible characteristics besides the underlying data. I did separate by location in each case but I did so differently each time.
 - Between the two exploratory plots there are some trends, mainly that walk time doesn't change too much on average between locations. There is also a pretty clear negative relationship between time left and total walk time that can be seen without any models.
-- The main feedback I got was on improving readability. My visual was hard to understand but with time and edxplaination it became more legible for my peers. The visual improvements and readability improvements I made, upping line thickness, marking stops, using one line, etc., were all based on this conversation with my peers.
+- The main feedback I got was on improving readability. My visual was hard to understand but with time and explanation it became more legible for my peers. The visual improvements and readability improvements I made, upping line thickness, marking stops, using one line, etc., were all based on this conversation with my peers.
 
 ## b.
 
-Using walk_minutes as a response and week as the predictor I believe the most interesting analysis we can run is a Kruskal-Wallis test to see if the distribution of walk times differs across the weeks.
+Using walk_minutes as a response and week as the predictor I believe the most interesting analysis we can run is a t-test (or Mann-Whitney U if nonparametric) to see if mean (or median) walk time differs across location.
 
-This is important to my central question of what is effecting my walk time to class, seeing if there is a difference across weeks could potentially mean that what week it is is also effecting my walk time.
+This is important to my central question of what is effecting my walk time to class, seeing if there is a difference across location could potentially invalidate my previous work on this data frame where I assumed non-dffering central tendancy between the two locations allowing for both locations' data to be used together.
 
 Walk time is a continuous numeric variable.
 
-Week is a categorical variable with 6 levels. Each level only is n = 5 making the non-parametric test appropriate here.
+Location is a categorical variable with 2 levels: Campbell (n = 19) and 387 (n = 13)
 
 ## c.
 
@@ -238,85 +239,86 @@ Week is a categorical variable with 6 levels. Each level only is n = 5 making th
 - Observations are independent
 - Response variable is continuous
 
-Checking similarity of distributions
+Running QQ to test normality
 
 ```{r}
-
-ggplot(data = personal_data,
-       mapping = aes(x = week,
-           y = walk_minutes)) +
-  geom_boxplot() +
+# baselayer: ggplot
+ggplot(data = personal_data, # using urchins clean data frame
+       aes(sample = walk_minutes)) + # y-axis for QQ plot
+  # first layer: QQ reference line
+  geom_qq_line(color = "cornflowerblue") + # displaying line in blue
+  # second layer: QQ plot 
+  geom_qq() +
+  # creating facets
+  facet_wrap(~location) +
+  # changing theme
   theme_bw()
 ```
 
-- Distributions relatively similar across weeks, with week 6 and 7 being similar and 10 being different due to being n = 3.
+Not very normal looking, some grouping along line but likely need to use non-parametric due to low sample size.
 
 ### Running analysis
 
 ```{r}
 
-walk_kw <- kruskal_test(walk_minutes ~ week,
-                        data = personal_data)
+wilcox_test(walk_minutes ~ location,
+                    data = personal_data)
 ```
 
-Interpretation: Kruskal-Wallis test, $\chi^2$(6) = 3.47, p = 0.749, $\alpha$ = 0.05)
+Interpretation: Mann-Whitney test, U = 118, p = 0.83, $\alpha$ = 0.05
 
 No significant difference in rank distributions.
-
-#### Post-hoc
-
-```{r}
-
-dunn_test(walk_minutes ~ week, 
-             data = personal_data)
-```
-
-No significant difference in any two groups, closest is weeks 10 and 5 (p = 0.236).
-
-#### Effect size
-
-```{r}
-
-kruskal_effsize(
-  walk_minutes ~ week, 
-             data = personal_data)
-```
-
-$\eta^2$ = 0.101, moderate difference in median walk minutes between weeks.
 
 ## d.
 
 
 ```{r}
 
-week_medians <- personal_data |> 
-  group_by(week) |> 
-  summarise(median_walk = median(walk_minutes)) |> 
+location_medians <- personal_data |> 
+  group_by(location) |> 
+  summarise(median_walk = median(walk_minutes),
+            q25 = quantile(walk_minutes, 0.25),
+            q75 = quantile(walk_minutes, 0.75)) |> 
   ungroup()
 
 ggplot(data = personal_data,
-       aes(x = week,
+       aes(x = location,
            y = walk_minutes)) +
-  geom_jitter(height = 0,
-              width = 0.1,
-              size = 2.5,
-              alpha = 0.85,
-              color = "#FE5A1D") +
-  geom_crossbar(data = week_medians,
+  geom_rect(data = location_medians,
+            aes(xmin = as.numeric(factor(location)) - 0.25,
+                xmax = as.numeric(factor(location)) + 0.25,
+                ymin = q25,
+                ymax = q75,
+                x = NULL,
+                y = NULL),
+            fill = "#003090",
+            alpha = 0.15) +
+  geom_crossbar(data = location_medians,
                 aes(y = median_walk,
                     ymin = median_walk,
                     ymax = median_walk),
                 color = "#003090",
                 width = 0.5,
                 linewidth = 0.9) +
-  labs(title = "Daily walk time across weeks",
-       x = "Week",
+  geom_jitter(height = 0,
+              width = 0.1,
+              size = 2.5,
+              alpha = 0.45,
+              color = "#FE5A1D") +
+  labs(title = "Daily walk time by location",
+       x = "Location",
        y = "Walk time (minutes)") +
   theme_bw() +
   theme(
     plot.title = element_text(face = "bold"),
     panel.grid.minor = element_blank())
-  
 ```
 
+## e.
+
+**Figure 2. No significant difference in walk time distributions across locations.** Blue cross bars represent median walk time to class for each location (Campbell n = 19 and 387 n = 13) with the rectangle representing the IQR for each week's observations. Underlying data is shown via the orange points which each represent a single day's walk time. Data collected by Luke Simon between the dates of 2026-04-20 and 2026-06-03.
+
+## f. 
+
+From the dates of 2026-04-20 and 2026-06-03 there is no difference in daily walk time distributions between building 387 (median = 14, n = 13) and Campbell Hall (median = 15, n = 19) (Mann-Whitney test, U = 118, p = 0.83, $\alpha$ = 0.05). Since our result is not significant we can assume that distributions are nearly identical (as is represented in the above figure) meaning that all previous analysis done and linear models created that do not differentiate between location are still valid. Essentially, walk times to each location are comparable and can be treated as independent observations in the same data set, any differentiation between the two locations would be included for clarity and aesthetic purposes only.
 
