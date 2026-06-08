@@ -19,6 +19,7 @@ execute:
 library(tidyverse)
 library(here)
 library(DHARMa)
+library(ggeffects)
 
 # reading in data and creating new object
 nest <- read_csv(
@@ -76,7 +77,114 @@ As ant species changes, the probability of nest occurance would likely differ. T
 
 | Model number | Ant Species | Tree Height | Predictor list                               |  
 |--------------|:-----------:|:-----------:|:--------------------------------------------:|  
-| 0            |     X       |      X      | all predictors, no interaction (null model)  |
-| 1            |     X       |      X      | all predictors, with interaction (full model)|    
+| 1            |     X       |      X      | all predictors, no interaction (null model)  |
+| 2            |     X       |      X      | all predictors, with interaction (full model)|    
 
 ## e.
+
+```{r}
+#| echo: false
+
+# model 1: all predictors no interaction
+model1 <-glm(case_control ~ height_cm + ant_species,
+             data = nests_clean,
+             family = "binomial")
+
+# model 2: all predictors with interaction
+model2 <-glm(case_control ~ height_cm * ant_species,
+             data = nests_clean,
+             family = "binomial")
+```
+
+## f.
+
+```{r}
+
+# running AIC test to determine best model
+AIC(model1, model2)
+```
+
+The best model as determined by Akaike’s Information Criterion (AIC) was the model that predicted test_case (whether or not a sample tree had a nest) using the interaction of tree height (height_cm) and species of acacia ant (ant_species)
+
+## g.
+
+```{r}
+
+# plotting simulated residuals from DHARMa package.
+plot(
+  simulateResiduals(model2)
+)
+```
+
+## h.
+
+```{r}
+
+# creating prediction model for model2
+preds <- ggpredict(model2,
+                   # terms for model, all tree heights all species
+                   terms = c("height_cm[all]", "ant_species")) |> 
+  # changing grouping column's name
+  rename(ant_species = group) |>
+  arrange(x)
+
+# setting custom species colors
+sp_cols <- c(
+  "RRB" = "tan",
+  "BBR" = "orange",
+  "AB" = "lightblue3"
+)
+
+# creating facet labels from nest_clean
+sp_labels <- nests_clean |>
+  # choosing correct columns
+  distinct(ant_species, sci_name) |>
+  deframe()
+
+# base layer: ggplot
+ggplot() +
+  # first layer: model confidence ribbon
+  geom_ribbon(data = preds, # prediction data frame
+              aes(x = x,
+                  ymin = conf.low, # min by low confidence
+                  ymax = conf.high, # max by high confidence
+                  fill = ant_species)) + # filling color by group
+  # second layer: model probability line
+  geom_line(data = preds, # prediction data frame
+            aes(x = x,
+                y = predicted),
+            # coloring line black
+            color = "black",
+            # making line thicker
+            linewidth = 1) +
+  # third layer: jitter for underlying data
+  geom_jitter(data = nests_clean, # nests_clean data frame
+              aes(x = height_cm, # x-axis: tree height
+                  y = case_control, # y-axis: nest occurance
+                  color = ant_species), # coloring by species
+              alpha = 0.35, # making points more opaque
+              shape = 21, # changing shape
+              height = 0) + # removing vertical jitter
+  # seperating by species
+  facet_wrap(~ ant_species,
+             # labelling with sci_name
+             labeller = labeller(group = sp_labels)) +
+  # setting colors by species
+  scale_color_manual(values = sp_cols) +
+  scale_fill_manual(values  = sp_cols) +
+  # relabelling x and y-axes
+  labs(
+    x = "Tree height (cm)", 
+    y = "Probability of nest occurrence"
+  ) +
+  # changing theme
+  theme_bw()+
+  # removing legend
+  theme(legend.position = "none",
+        # removing gridlines
+        panel.grid = element_blank()) 
+``` 
+
+## i.
+
+
