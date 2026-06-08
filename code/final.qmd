@@ -168,7 +168,7 @@ ggplot() +
   # seperating by species
   facet_wrap(~ ant_species,
              # labelling with sci_name
-             labeller = labeller(group = sp_labels)) +
+             labeller = labeller(ant_species = sp_labels)) +
   # setting colors by species
   scale_color_manual(values = sp_cols) +
   scale_fill_manual(values  = sp_cols) +
@@ -187,4 +187,21 @@ ggplot() +
 
 ## i.
 
+**Figure 1. Model predictions for bird nest occurrence in acacia trees based on height and ant species** Figure displays model predictions for probability of nest occurrence as tree height increases, separated by ant species living on the tree. Line represents exact predictions of model that assumes interaction between species and tree height. Ribbon represents model 95% confidence interval. Species are sorted by color with *C. sjostediti* being tan, *C. mimosae* being orange, and *C. nigriceps* being blue. Data originally from Lujan, E., Nielsen, R., Short, Z., Wicks, S., Nderitu Watetu, W., Malingati Khasoha, L., Palmer, T. M., Goheen, J. R., & Alston, J. M. (2023). Data, code, and metadata for: Symbiotic acacia ants drive nesting behavior by birds in an African savanna [Data set]. Zenodo. https://doi.org/10.5281/zenodo.8373322.
+
+## j.
+
+```{r}
+
+# creating prediction at 600 cm
+predict_600 <- ggpredict(model2,
+                         terms = c("height_cm [600]", "ant_species"))
+```
+
+## k.
+
+
+# Problem 3. Problem 3. Affective and exploratory visualizations
+
+a.
 
