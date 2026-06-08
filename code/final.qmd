@@ -20,10 +20,21 @@ library(tidyverse)
 library(here)
 library(DHARMa)
 library(ggeffects)
+library(rstatix)
 
 # reading in data and creating new object
 nest <- read_csv(
   here("data", "nest_data_final.csv"))
+
+# creating new data frame with personal data
+personal_data <- read_csv(here("data", "personal-datasheet.csv")) |> 
+  # standardizing column names
+  clean_names() |> 
+  # dropping rows with na observations
+  drop_na() |> 
+  # changing the stop column to display TRUE/FALSE instead of 1/0
+  mutate(stop = as.logical(stop),
+         week = as.factor(week))
 ```
 
 
@@ -203,5 +214,109 @@ predict_600 <- ggpredict(model2,
 
 # Problem 3. Problem 3. Affective and exploratory visualizations
 
-a.
+## a.
+
+- My affective visualization is pretty much a completely new way to display data when compared to my initial exploratory plots. In effect, it is still a sort of scatter plot but point shape and color matter far more than location. There is also no models or metrics of central tendency as my goal with the affective visualization was not to make something that explained the whole dataset.
+- Honestly it is pretty much impossible to see any similarities between my plots and my affective piece, they share no discernible characteristics besides the underlying data. I did separate by location in each case but I did so differently each time.
+- Between the two exploratory plots there are some trends, mainly that walk time doesn't change too much on average between locations. There is also a pretty clear negative relationship between time left and total walk time that can be seen without any models.
+- The main feedback I got was on improving readability. My visual was hard to understand but with time and edxplaination it became more legible for my peers. The visual improvements and readability improvements I made, upping line thickness, marking stops, using one line, etc., were all based on this conversation with my peers.
+
+## b.
+
+Using walk_minutes as a response and week as the predictor I believe the most interesting analysis we can run is a Kruskal-Wallis test to see if the distribution of walk times differs across the weeks.
+
+This is important to my central question of what is effecting my walk time to class, seeing if there is a difference across weeks could potentially mean that what week it is is also effecting my walk time.
+
+Walk time is a continuous numeric variable.
+
+Week is a categorical variable with 6 levels. Each level only is n = 5 making the non-parametric test appropriate here.
+
+## c.
+
+### Checking assumptions
+
+- Observations are independent
+- Response variable is continuous
+
+Checking similarity of distributions
+
+```{r}
+
+ggplot(data = personal_data,
+       mapping = aes(x = week,
+           y = walk_minutes)) +
+  geom_boxplot() +
+  theme_bw()
+```
+
+- Distributions relatively similar across weeks, with week 6 and 7 being similar and 10 being different due to being n = 3.
+
+### Running analysis
+
+```{r}
+
+walk_kw <- kruskal_test(walk_minutes ~ week,
+                        data = personal_data)
+```
+
+Interpretation: Kruskal-Wallis test, $\chi^2$(6) = 3.47, p = 0.749, $\alpha$ = 0.05)
+
+No significant difference in rank distributions.
+
+#### Post-hoc
+
+```{r}
+
+dunn_test(walk_minutes ~ week, 
+             data = personal_data)
+```
+
+No significant difference in any two groups, closest is weeks 10 and 5 (p = 0.236).
+
+#### Effect size
+
+```{r}
+
+kruskal_effsize(
+  walk_minutes ~ week, 
+             data = personal_data)
+```
+
+$\eta^2$ = 0.101, moderate difference in median walk minutes between weeks.
+
+## d.
+
+
+```{r}
+
+week_medians <- personal_data |> 
+  group_by(week) |> 
+  summarise(median_walk = median(walk_minutes)) |> 
+  ungroup()
+
+ggplot(data = personal_data,
+       aes(x = week,
+           y = walk_minutes)) +
+  geom_jitter(height = 0,
+              width = 0.1,
+              size = 2.5,
+              alpha = 0.85,
+              color = "#FE5A1D") +
+  geom_crossbar(data = week_medians,
+                aes(y = median_walk,
+                    ymin = median_walk,
+                    ymax = median_walk),
+                color = "#003090",
+                width = 0.5,
+                linewidth = 0.9) +
+  labs(title = "Daily walk time across weeks",
+       x = "Week",
+       y = "Walk time (minutes)") +
+  theme_bw() +
+  theme(
+    plot.title = element_text(face = "bold"),
+    panel.grid.minor = element_blank())
+  
+```
+
 
