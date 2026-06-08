@@ -77,4 +77,6 @@ As ant species changes, the probability of nest occurance would likely differ. T
 | Model number | Ant Species | Tree Height | Predictor list                               |  
 |--------------|:-----------:|:-----------:|:--------------------------------------------:|  
 | 0            |     X       |      X      | all predictors, no interaction (null model)  |
-| 1            |     X       |      X      | all predictors, with interaction (full model)|                  
+| 1            |     X       |      X      | all predictors, with interaction (full model)|    
+
+## e.
