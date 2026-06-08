@@ -128,6 +128,8 @@ plot(
 )
 ```
 
+Simulated residuals look good, QQ has very little deviation from expected and residual vs predicted looks random with no discernable pattern.
+
 ## h.
 
 ```{r}
@@ -261,8 +263,11 @@ Not very normal looking, some grouping along line but likely need to use non-par
 
 ```{r}
 
+# Mann-Whitney U test
+# Walk_minutes response
+# Location predictor
 wilcox_test(walk_minutes ~ location,
-                    data = personal_data)
+                    data = personal_data) # pulling from personal data
 ```
 
 Interpretation: Mann-Whitney test, U = 118, p = 0.83, $\alpha$ = 0.05
@@ -274,44 +279,60 @@ No significant difference in rank distributions.
 
 ```{r}
 
+# creating new location median data frame
 location_medians <- personal_data |> 
+  # grouping by location
   group_by(location) |> 
-  summarise(median_walk = median(walk_minutes),
-            q25 = quantile(walk_minutes, 0.25),
-            q75 = quantile(walk_minutes, 0.75)) |> 
+  # summarizing data
+  summarise(median_walk = median(walk_minutes), # calculated medians
+            q25 = quantile(walk_minutes, 0.25), # calculated CI lower
+            q75 = quantile(walk_minutes, 0.75)) |># calculating CI Upper
+  # ungrouping
   ungroup()
 
+# base layer: ggplot
 ggplot(data = personal_data,
-       aes(x = location,
-           y = walk_minutes)) +
+       aes(x = location, # x-axis: location
+           y = walk_minutes)) + # y-axis: walk minutes
+  # first layer: rectangles for distributions
   geom_rect(data = location_medians,
+            # setting rectangle's x max and min
             aes(xmin = as.numeric(factor(location)) - 0.25,
                 xmax = as.numeric(factor(location)) + 0.25,
-                ymin = q25,
-                ymax = q75,
+                ymin = q25, # ymin at lower quartile
+                ymax = q75, # ymax at upper quartile
                 x = NULL,
                 y = NULL),
+            # filling color
             fill = "#003090",
+            # making slightly transparent
             alpha = 0.15) +
+  # second layer: cross bars for medians
   geom_crossbar(data = location_medians,
+                # setting to display medians for each location
                 aes(y = median_walk,
                     ymin = median_walk,
                     ymax = median_walk),
+                # coloring same as rectangle
                 color = "#003090",
-                width = 0.5,
-                linewidth = 0.9) +
-  geom_jitter(height = 0,
-              width = 0.1,
-              size = 2.5,
-              alpha = 0.45,
-              color = "#FE5A1D") +
+                width = 0.5, # make bar less wide
+                linewidth = 0.9) + # making bar less thick
+  # third layer: jitter for underlying data
+  geom_jitter(height = 0, # removing vertical jitter
+              width = 0.1, # slight horizontal jitter
+              size = 2.5, # making points larger
+              alpha = 0.45, # making points transparent
+              color = "#FE5A1D") + # changing color
+  # relabeling title and axes
   labs(title = "Daily walk time by location",
        x = "Location",
        y = "Walk time (minutes)") +
+  # changing theme
   theme_bw() +
+  # further theme adjustments
   theme(
-    plot.title = element_text(face = "bold"),
-    panel.grid.minor = element_blank())
+    plot.title = element_text(face = "bold"), # bolding title
+    panel.grid.minor = element_blank()) # removing minor gridlines
 ```
 
 ## e.
