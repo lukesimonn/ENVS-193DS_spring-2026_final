@@ -56,9 +56,9 @@ nests_clean <- nest |>
   filter(ant_species %in% c("RRB", "BBR", "AB")) |> 
   # creating new column for full scientific name
   mutate(sci_name = case_when(
-      ant_species == "RRB" ~ "Crematogaster sjostedti",
-      ant_species == "BBR" ~ "Crematogaster mimosae",
-      ant_species == "AB"  ~ "Crematogaster nigriceps"),
+      ant_species == "AB" ~ "Crematogaster sjostedti",
+      ant_species == "RRB" ~ "Crematogaster mimosae",
+      ant_species == "BBR"  ~ "Crematogaster nigriceps"),
       # reordering factors for ant species
     ant_species = factor(ant_species,
       levels = c("RRB", "BBR", "AB"))
@@ -79,11 +79,11 @@ For this data, a value of 1 in the case_control column indicates that a nest was
 
 ### Tree Height (height_cm)
 
-Tree height in this data set is a continuous variable that is measured in centimeters. As tree height increases the probability of nest occurrence would likely increase. Taller trees are more structurally complex and therefore have more nesting opportunities, they may also provide better predator avoidance for birds (Introduction, paragraph 2; Methods, "Study site and species" subsection, paragraph 1).
+Tree height in this data set is a continuous variable that is measured in centimeters. As tree height increases the probability of nest occurrence would likely increase. Taller trees are more structurally complex and therefore have more nesting opportunities, they may also provide better predator avoidance for birds (From Results paragraph 1 and Discussion paragraph 2).
 
 ### Acacia ant species (ant_species)
 
-As ant species changes, the probability of nest occurance would likely differ. This is due to each ant species exhibiting a distinct aggression level and mutualistic relationship with the host Acacia tree which affects the level of predator protection a nest in said tree would receive. (Introduction, paragraph 3; Methods, "Nest box experiment" subsection, paragraph 1)
+Ant species is a categorical variable with four factors. As ant species changes, the probability of nest occurance would likely differ. This is due to each ant species exhibiting a distinct aggression level and mutualistic relationship with the host Acacia tree which affects the level of predator protection a nest in said tree would receive. (Results, paragraphs 1 + 2, Introduction, paragrpah 1, Discussion, paragraph 3)
 
 ## d.
 
@@ -144,9 +144,9 @@ preds <- ggpredict(model2,
 
 # setting custom species colors
 sp_cols <- c(
+  "AB" = "lightblue3",
   "RRB" = "tan",
-  "BBR" = "orange",
-  "AB" = "lightblue3"
+  "BBR" = "orange"
 )
 
 # creating facet labels from nest_clean
@@ -208,11 +208,19 @@ ggplot() +
 ```{r}
 
 # creating prediction at 600 cm
-predict_600 <- ggpredict(model2,
-                         terms = c("height_cm [600]", "ant_species"))
+ggpredict(model2, 
+          terms = c("height_cm [600]", "ant_species"))
+
+# showing summary for baseline
+summary(model2)
 ```
 
 ## k.
+
+Ant species and tree height interact to predict the probability of a bird nest in a sample acacia tree. As tree height increases, nest probability increases. Additionally, the effect of height on nest occurrence probability is stronger for *C. nigriceps*  ant species trees (odds ratio: 1.092) than *C. mimosae* ant species trees (odds ratio: 1.007) or *C. sjostedti* ant species trees (odds ratio: 1.004). At 600 cm (the highest recorded tree height), nest occurrence probability is 0.74 (95% CI: [0.48, 0.90]) for *C. mimosae*,  1.00 (95% CI:[1.00, 1.00]) for *C. sjostedti*, and 0.20 (95% CI: [0.00, 0.99]). It is important to note that the model predicted no significant interaction between tree height and *C. sjostedti*, accounting for the strange-looking figure and non-precise CI. This makes biological sense as that species does not display defensive characteristics and therefore would not affect whether or not a nest is protected. *C. mimosae* acts as a good reference here because it is a good defender but does not alter the tree, meaning that there is interaction but it is more straightforward; especially when compared to *C. nigriceps* which is an aggressive defender but also alters tree structure to produce denser canopies therefore better defending nests (explaining sharp probability jump to 1 as height increases).
+
+
+
 
 
 # Problem 3. Problem 3. Affective and exploratory visualizations
