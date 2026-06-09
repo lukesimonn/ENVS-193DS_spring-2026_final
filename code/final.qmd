@@ -51,7 +51,13 @@ In part two they used a Chi-square test to see if there was a relationship betwe
 
 Observed American Avocets (*Recurvirostra americana*) were more likely to utilize micro-habitats closer to the water's edge. This suggests that proximity to water is a key feature of habitat suitability for this species.
 
-The tree observed shorebird species (American Avocets, )
+The three observed shorebird species (American Avocets, Forster’s Tern, Black-necked Stilt) were not evenly distributed across habitats (managed pond, non-tidal marsh, salt pond, tidal marsh, or tidal mudflat). This means that each species tends to favor a specific habitat or multiple habitats, had there instead been even or completely random distribution we would not be able to assume this.
+
+## c.
+
+- An additional variable that we could collect would be percent vegetation coverage in each micro-habitat.
+- This would be measured as a continuous variable with values ranging from 0% to 100%
+- This variable could influence American Avocet micro-habitat choice as more coverage could provide more protection from predators or could conversely reduce foraging efficiency for the birds due to the density of foliage. Data collection for this would be fairly easy by either using quadrats at each habitat site (and collected each plant species + coverage) or by taking pictures of each habitat and using software like ImageJ to see the extent of coverage.
 
 # Problem 2. Data Analysis
 
@@ -73,7 +79,7 @@ nests_clean <- nest |>
       ant_species == "BBR"  ~ "Crematogaster nigriceps"),
       # reordering factors for ant species
     ant_species = factor(ant_species,
-      levels = c("RRB", "BBR", "AB"))
+      levels = c("AB", "RRB", "BBR"))
     )
 
 # displaying structure of data frame
@@ -140,7 +146,7 @@ plot(
 )
 ```
 
-Simulated residuals look good, QQ has very little deviation from expected and residual vs predicted looks random with no discernable pattern.
+Simulated residuals look good, QQ has very little deviation from expected and residual vs predicted looks random with no discernible pattern.
 
 ## h.
 
@@ -213,7 +219,7 @@ ggplot() +
 
 ## i.
 
-**Figure 1. Model predictions for bird nest occurrence in acacia trees based on height and ant species** Figure displays model predictions for probability of nest occurrence as tree height increases, separated by ant species living on the tree. Line represents exact predictions of model that assumes interaction between species and tree height. Ribbon represents model 95% confidence interval. Species are sorted by color with *C. sjostediti* being tan, *C. mimosae* being orange, and *C. nigriceps* being blue. Data originally from Lujan, E., Nielsen, R., Short, Z., Wicks, S., Nderitu Watetu, W., Malingati Khasoha, L., Palmer, T. M., Goheen, J. R., & Alston, J. M. (2023). Data, code, and metadata for: Symbiotic acacia ants drive nesting behavior by birds in an African savanna [Data set]. Zenodo. https://doi.org/10.5281/zenodo.8373322.
+**Figure 1. Model predictions for bird nest occurrence in acacia trees based on height and ant species** Figure displays model predictions for probability of nest occurrence as tree height increases, separated by ant species living on the tree. Line represents exact predictions of model that assumes interaction between species and tree height. Ribbon represents model 95% confidence interval. Species are sorted by color with *C. sjostediti* being blue, *C. mimosae* being tan, and *C. nigriceps* being orange. Data originally from Lujan, E., Nielsen, R., Short, Z., Wicks, S., Nderitu Watetu, W., Malingati Khasoha, L., Palmer, T. M., Goheen, J. R., & Alston, J. M. (2023). Data, code, and metadata for: Symbiotic acacia ants drive nesting behavior by birds in an African savanna [Data set]. Zenodo. https://doi.org/10.5281/zenodo.8373322.
 
 ## j.
 
