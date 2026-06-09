@@ -41,6 +41,18 @@ personal_data <- read_csv(here("data", "personal-datasheet.csv")) |>
 
 # Problem 1. Research writing
 
+## a. 
+
+In part one they used a generalized linear model (specifically a logistic regression). The provided p-value indicates the predictor accurately explains the variance in the response.
+
+In part two they used a Chi-square test to see if there was a relationship between the two categorical variables. The p-value indicates that there is a relationship between the two.
+
+## b.
+
+Observed American Avocets (*Recurvirostra americana*) were more likely to utilize micro-habitats closer to the water's edge. This suggests that proximity to water is a key feature of habitat suitability for this species.
+
+The tree observed shorebird species (American Avocets, )
+
 # Problem 2. Data Analysis
 
 ## a.
@@ -217,7 +229,9 @@ summary(model2)
 
 ## k.
 
-Ant species and tree height interact to predict the probability of a bird nest in a sample acacia tree. As tree height increases, nest probability increases. Additionally, the effect of height on nest occurrence probability is stronger for *C. nigriceps*  ant species trees (odds ratio: 1.092) than *C. mimosae* ant species trees (odds ratio: 1.007) or *C. sjostedti* ant species trees (odds ratio: 1.004). At 600 cm (the highest recorded tree height), nest occurrence probability is 0.74 (95% CI: [0.48, 0.90]) for *C. mimosae*,  1.00 (95% CI:[1.00, 1.00]) for *C. sjostedti*, and 0.20 (95% CI: [0.00, 0.99]). It is important to note that the model predicted no significant interaction between tree height and *C. sjostedti*, accounting for the strange-looking figure and non-precise CI. This makes biological sense as that species does not display defensive characteristics and therefore would not affect whether or not a nest is protected. *C. mimosae* acts as a good reference here because it is a good defender but does not alter the tree, meaning that there is interaction but it is more straightforward; especially when compared to *C. nigriceps* which is an aggressive defender but also alters tree structure to produce denser canopies therefore better defending nests (explaining sharp probability jump to 1 as height increases).
+Ant species and tree height interact to predict the probability of a bird nest in a sample acacia tree. As tree height increases, nest probability increases. Additionally, the effect of height on nest occurrence probability is stronger for *C. nigriceps*  ant species trees (odds ratio: 1.092) than *C. mimosae* ant species trees (odds ratio: 1.007) or *C. sjostedti* ant species trees (odds ratio: 1.004). At 600 cm (the highest recorded tree height), nest occurrence probability is 0.74 (95% CI: [0.48, 0.90]) for *C. mimosae*,  1.00 (95% CI:[1.00, 1.00]) for *C. nigriceps* , and 0.20 (95% CI: [0.00, 0.99]) for *C. sjostedti*. 
+
+It is important to note that the model predicted no significant interaction between tree height and *C. sjostedti*, (which accounts for the strange-looking figure and non-precise CI)  meaning that the interaction between that specific species and tree height does not predict nest occurrence. This makes biological sense as *C. sjostedti* does not display defensive characteristics and therefore would not affect whether or not a nest is protected. *C. mimosae* acts as a good reference here because it is a good defender but does not alter the tree, meaning that there is interaction but it is more straightforward; especially when compared to *C. nigriceps* which is an aggressive defender but also alters tree structure to produce denser canopies therefore better defending nests (explaining sharp probability jump to 1 as height increases).
 
 
 
