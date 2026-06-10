@@ -139,6 +139,8 @@ The best model as determined by Akaike’s Information Criterion (AIC) was the m
 ## g.
 
 ```{r}
+#| fig-height: 5
+#| fig-width: 8
 
 # plotting simulated residuals from DHARMa package.
 plot(
@@ -167,11 +169,6 @@ sp_cols <- c(
   "BBR" = "orange"
 )
 
-# creating facet labels from nest_clean
-sp_labels <- nests_clean |>
-  # choosing correct columns
-  distinct(ant_species, sci_name) |>
-  deframe()
 
 # base layer: ggplot
 ggplot() +
@@ -192,19 +189,20 @@ ggplot() +
   # third layer: jitter for underlying data
   geom_jitter(data = nests_clean, # nests_clean data frame
               aes(x = height_cm, # x-axis: tree height
-                  y = case_control, # y-axis: nest occurance
+                  y = case_control, # y-axis: nest occurrence
                   color = ant_species), # coloring by species
-              alpha = 0.35, # making points more opaque
-              shape = 21, # changing shape
+              alpha = 0.4, # making points more opaque
               height = 0) + # removing vertical jitter
-  # seperating by species
+  # separating by species
   facet_wrap(~ ant_species,
-             # labelling with sci_name
-             labeller = labeller(ant_species = sp_labels)) +
+             # labeling with sci_name
+             labeller = labeller(ant_species = c("AB" = "C. sjostedti", 
+                                                  "RRB" = "C. mimosae",
+                                                  "BBR" = "C. nigriceps"))) +
   # setting colors by species
   scale_color_manual(values = sp_cols) +
   scale_fill_manual(values  = sp_cols) +
-  # relabelling x and y-axes
+  # relabeling x and y-axes
   labs(
     x = "Tree height (cm)", 
     y = "Probability of nest occurrence"
@@ -219,7 +217,7 @@ ggplot() +
 
 ## i.
 
-**Figure 1. Model predictions for bird nest occurrence in acacia trees based on height and ant species** Figure displays model predictions for probability of nest occurrence as tree height increases, separated by ant species living on the tree. Line represents exact predictions of model that assumes interaction between species and tree height. Ribbon represents model 95% confidence interval. Species are sorted by color with *C. sjostediti* being blue, *C. mimosae* being tan, and *C. nigriceps* being orange. Data originally from Lujan, E., Nielsen, R., Short, Z., Wicks, S., Nderitu Watetu, W., Malingati Khasoha, L., Palmer, T. M., Goheen, J. R., & Alston, J. M. (2023). Data, code, and metadata for: Symbiotic acacia ants drive nesting behavior by birds in an African savanna [Data set]. Zenodo. https://doi.org/10.5281/zenodo.8373322.
+**Figure 1. Model predictions for bird nest occurrence in acacia trees based on height and ant species** Figure displays model predictions for probability of nest occurrence as tree height increases, separated by ant species living on the tree. Line represents exact predictions of model that assumes interaction between species and tree height. Ribbon represents model 95% confidence interval. Species are sorted by color with *C. sjostediti* being blue, *C. mimosae* being tan, and *C. nigriceps* being orange. Underlying data represented by points with each representing a single tree and observation. Data originally from Lujan, E., Nielsen, R., Short, Z., Wicks, S., Nderitu Watetu, W., Malingati Khasoha, L., Palmer, T. M., Goheen, J. R., & Alston, J. M. (2023). Data, code, and metadata for: Symbiotic acacia ants drive nesting behavior by birds in an African savanna [Data set]. Zenodo. https://doi.org/10.5281/zenodo.8373322.
 
 ## j.
 
